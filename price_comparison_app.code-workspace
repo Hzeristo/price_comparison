@@ -1,11 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "frontend"
+			"path": "."
 		},
-		{
-			"path": "backend"
-		}
 	],
 	"settings": {}
 }
