@@ -13,43 +13,43 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.*;
+import org.springframework.security.core.userdetails.*;
+
 
 import com.example.price_comparison.security.*;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // 启用方法级别的权限控制
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private final CustomAuthenticationProvider customAuthenticationProvider;
+
     @Autowired
-    private CustomAuthenticationProvider customAuthenticationProvider;
+    public SecurityConfig(CustomAuthenticationProvider customAuthenticationProvider) {
+        this.customAuthenticationProvider = customAuthenticationProvider;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable() // 根据需要配置CSRF保护
+        http.csrf().disable()
             .authorizeRequests()
-                .requestMatchers("/public/**").permitAll() // 公开接口
-                .anyRequest().authenticated() // 其他请求需要认证
+                .requestMatchers("/public/**").permitAll()
+                .anyRequest().authenticated()
             .and()
-            .formLogin() // 启用表单登录
-                .loginPage("/login") // 自定义登录页面
+            .formLogin()
+                .loginPage("/login")
                 .permitAll()
             .and()
-            .logout() // 启用注销
+            .logout()
                 .permitAll();
         return http.build();
     }
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = 
-            http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider);
         return authenticationManagerBuilder.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
