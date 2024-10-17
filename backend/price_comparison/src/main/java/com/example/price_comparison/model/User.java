@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-
+import java.time.temporal.ChronoUnit;
 
 /**
  * User class represents a user in the system.
@@ -27,16 +29,25 @@ public class User {
     private int id;
 
     @Column(unique = true, nullable = false)
+    @NotNull(message = "Username cannot be null")
+    @NotBlank(message = "Username cannot be empty")
     private String username;
 
     @Column(nullable = false)
+    @NotNull(message = "Password cannot be null")
+    @NotBlank(message = "Password cannot be empty")
     private String password;
 
     @Email(message = "Email should be valid")
     @Column(unique = true, nullable = false)
+    @NotNull(message = "Email cannot be null")
+    @NotBlank(message = "Email cannot be empty")
     private String email;
 
+    @Column(unique = true, nullable = false)
     @Pattern(regexp = "^\\d{13}$", message = "Phone number should be 13 digits")
+    @NotNull(message = "Email cannot be null")
+    @NotBlank(message = "Email cannot be empty")
     private String phone;
 
     @Builder.Default
@@ -47,31 +58,11 @@ public class User {
     private LocalDateTime updatedAt;
 
     /**
-     * Validates the password against the stored encrypted password.
-     *
-     * @param inputPassword The password to validate.
-     * @return true if the password matches, false otherwise.
-     */
-    public boolean validatePassword(String inputPassword) {
-        return this.password.equals(encryptPassword(inputPassword));
-    }
-
-    /**
-     * Encrypts the provided password using BCrypt.
-     *
-     * @param password The password to encrypt.
-     * @return The encrypted password.
-     */
-    private String encryptPassword(String password) {
-        return new BCryptPasswordEncoder().encode(password);
-    }
-
-    /**
      * Prepares the user object before persisting to the database.
      */
     @PrePersist
     public void prePersist() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
         this.createdAt = now;
         this.updatedAt = now;
     }
@@ -81,6 +72,6 @@ public class User {
      */
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
     }
 }
