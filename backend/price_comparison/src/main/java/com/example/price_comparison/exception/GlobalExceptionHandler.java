@@ -2,10 +2,14 @@ package com.example.price_comparison.exception;
 
 import com.example.price_comparison.util.ApiResponse;
 import com.example.price_comparison.exception.custom.*;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 
 /**
  * Global exception handler for the application.
@@ -23,6 +27,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleUserNotFound(UserNotFoundException ex) {
         ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     /**
