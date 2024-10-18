@@ -6,19 +6,19 @@ import com.example.price_comparison.exception.custom.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.*;
-import java.nio.file.attribute.UserPrincipalNotFoundException;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UserService {
-
 
     @Autowired
     private UserRepository userRepository;
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @Transactional
     public User createUser(User user) {
         validateUserForDuplicates(user);
         return userRepository.save(user);
@@ -27,10 +27,11 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public User getUserByUsername(String username) {
         return Optional.ofNullable(userRepository.findByUsername(username))
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("Can't find user named \"" + username + "\""));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @Transactional
     public User updateUser(String username, User user) {
         User existingUser = getUserByUsername(username);
         validateUserForDuplicates(user);
@@ -42,6 +43,7 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public void deleteUser(String username) {
         User existingUser = getUserByUsername(username);
         userRepository.delete(existingUser);
@@ -69,20 +71,25 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public void manageAdmin(String username, boolean isAdmin) {
         User user = getUserByUsername(username);
-        if(user.getRole().isAdmin() == isAdmin) {
+        if (user.getRole().isAdmin() == isAdmin) {
             throw new UnnecessaryUpdateException("User already has the desired role");
         }
         user.setRole(isAdmin ? Role.ADMIN : Role.USER);
         userRepository.save(user); 
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
     private void validateUserForDuplicates(User user) {
         String username = user.getUsername();
         String email = user.getEmail();
         String phone = user.getPhone();
-
         if (userExistsByUsername(username)) {
             throw new DuplicateResourceException("Username already exists.", "username");
         }
