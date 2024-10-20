@@ -29,10 +29,90 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
+    /**
+     * Handles custom UnauthorizedException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ApiResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {
         ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+    
+    /**
+     * Handles custom DuplicateResourceException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<String>> handleDuplicateResourceException(DuplicateResourceException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage(), ex.getType());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    /**
+     * Handles custom DictionaryNotInitializedException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(DictionaryNotInitializedException.class)
+    public ResponseEntity<ApiResponse<String>> handleDictionaryNotInitializedException(DictionaryNotInitializedException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage(), ex.getPlatform());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    /**
+     * Handles custom UnnecessaryUpdateException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(UnnecessaryUpdateException.class)
+    public ResponseEntity<ApiResponse<String>> handleUnnecessaryUpdateException(UnnecessaryUpdateException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    /**
+     * Handles custom NotImplementedException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(NotImplementedException.class)
+    public ResponseEntity<ApiResponse<String>> handleNotImplementedException(NotImplementedException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(response);
+    }
+
+    /**
+     * Handles ConstraintViolationException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        ApiResponse<String> response = ApiResponse.failure("Invalid input for database: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+    
+    
+
+    /**
+     * Handles IllegalArgumentException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<String>>handleIllegalArgumentException(IllegalArgumentException ex) {
+        ApiResponse<String> response = ApiResponse.failure("Invalid input for matching: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     /**

@@ -1,21 +1,23 @@
 package com.example.price_comparison.exception.custom;
 
-import lombok.AllArgsConstructor;
+import com.example.price_comparison.model.Platform;
+import lombok.Setter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 @Getter
 @Setter
 @NoArgsConstructor
-public class UnnecessaryUpdateException extends RuntimeException {
+public class DictionaryNotInitializedException extends RuntimeException {
     private String message;
-    
-    public UnnecessaryUpdateException(String message) {
+    private Platform platform;
+
+    public DictionaryNotInitializedException(String message, Platform platform) {
         super(message);
         this.message = message;
+        this.platform = platform;
     }
 }

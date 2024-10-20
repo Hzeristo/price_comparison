@@ -7,14 +7,14 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
+@ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
 @Getter
 @Setter
 @NoArgsConstructor
-public class UnnecessaryUpdateException extends RuntimeException {
+public class NotImplementedException extends RuntimeException {
     private String message;
-    
-    public UnnecessaryUpdateException(String message) {
+
+    public NotImplementedException(String message) {
         super(message);
         this.message = message;
     }
