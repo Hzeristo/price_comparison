@@ -99,6 +99,11 @@
 			<version>5.11.2</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.hankcs.hanlp.restful</groupId>
+			<artifactId>hanlp-restful</artifactId>
+			<version>0.0.15</version>
+		  </dependency>
 	</dependencies>
 
 	<build>
