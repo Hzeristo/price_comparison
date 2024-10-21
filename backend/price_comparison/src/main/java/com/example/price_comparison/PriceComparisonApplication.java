@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EntityScan("com.example.price_comparison.model")
 @EnableJpaRepositories("com.example.price_comparison.repository")
 public class PriceComparisonApplication {
 

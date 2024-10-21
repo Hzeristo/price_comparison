@@ -22,6 +22,19 @@ public enum Role {
         }
         throw new IllegalArgumentException("No role found for: " + role);
     }
+
+    public static boolean isValidRole(String role) {
+        try {
+            fromString(role);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static String[] getAllRoles() {
+        return new String[]{USER.name(), ADMIN.name()};
+    }
     
     @Override
     public String toString() {

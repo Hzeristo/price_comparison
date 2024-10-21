@@ -2,6 +2,8 @@ package com.example.price_comparison.exception;
 
 import com.example.price_comparison.util.ApiResponse;
 import com.example.price_comparison.exception.custom.*;
+import com.example.price_comparison.model.Platform;
+
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,8 +62,8 @@ public class GlobalExceptionHandler {
      * @return a standardized API response
      */
     @ExceptionHandler(DictionaryNotInitializedException.class)
-    public ResponseEntity<ApiResponse<String>> handleDictionaryNotInitializedException(DictionaryNotInitializedException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage(), ex.getPlatform());
+    public ResponseEntity<ApiResponse<Platform>> handleDictionaryNotInitializedException(DictionaryNotInitializedException ex) {
+        ApiResponse<Platform> response = ApiResponse.failure(ex.getMessage(), ex.getPlatform());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 

@@ -2,14 +2,16 @@ package com.example.price_comparison.service;
 
 import com.example.price_comparison.exception.custom.*;
 import com.example.price_comparison.repository.CategoryRepository;
-
-import main.java.com.example.price_comparison.exception.custom.DictionaryNotInitializedException;
-
 import com.example.price_comparison.model.Category;
 import com.example.price_comparison.model.CategoryDict;
+import com.example.price_comparison.model.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Optional;
 
 
 @Service
@@ -43,14 +45,14 @@ public class CategoryService {
                 }
             }
         } catch (IOException e) {
-            throw new DictionaryNotInitializedException("Failed to initialize dictionary for platform: " + Platform.JD, e);
+            throw new DictionaryNotInitializedException("Failed to initialize dictionary for platform: " + categoryDict.getPlatform().getName(), categoryDict.getPlatform());
         }
         return dict;
     }
 
     /**
-     * 
-     * @return
+     * Get the category dictionary
+     * @return CategoryDict
      */
     public CategoryDict getCategoryDict() {
         return categoryDict;
@@ -67,7 +69,7 @@ public class CategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     public Category createCategory(Category category) {
         if (categoryRepository.existsByName(category.getName())) {
-            throw new CategoryAlreadyExistsException("Category with name " + category.getName() + " already exists");
+            throw new DuplicateResourceException("Category with name " + category.getName() + " already exists", "category");
         }
         return categoryRepository.save(category);
     }
@@ -80,7 +82,7 @@ public class CategoryService {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryById(int id) {
-        return categoryRepository.findById(id)
+        return Optional.ofNullable(categoryRepository.findById(id))
             .orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found"));
     }
 
@@ -91,7 +93,7 @@ public class CategoryService {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryByName(String name) {
-        return categoryRepository.findByName(name)
+        return Optional.ofNullable(categoryRepository.findByName(name))
             .orElseThrow(() -> new CategoryNotFoundException("Category with name " + name + " not found"));
     }
 
@@ -102,7 +104,7 @@ public class CategoryService {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryParent(String name) {
-        return getCategoryByName(name).getParent()
+        return Optional.ofNullable(getCategoryByName(name).getParent())
             .orElseThrow(() -> new CategoryNotFoundException("Parent of category with name " + name + " not found"));
     }
     
@@ -113,7 +115,7 @@ public class CategoryService {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryChild(String name) {
-        return new NotImplementedException("not implemented: getCategoryChild()");
+        throw new NotImplementedException("not implemented: getCategoryChild()");
     }
 
     /**

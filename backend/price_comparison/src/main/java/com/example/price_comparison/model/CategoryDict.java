@@ -3,11 +3,15 @@ package com.example.price_comparison.model;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import java.util.Map;
 
 @Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDict {
+    
     private Platform platform;
     private Map<String, String>dict;
 
