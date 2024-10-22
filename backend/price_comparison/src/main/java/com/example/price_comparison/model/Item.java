@@ -45,6 +45,11 @@ public class Item {
     @NotBlank(message = "Image cannot be empty")
     private String image;
 
+    @Column(nullable = false)
+    @NotNull(message = "URL cannot be null")
+    @NotBlank(message = "URL cannot be empty")
+    private String url;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
