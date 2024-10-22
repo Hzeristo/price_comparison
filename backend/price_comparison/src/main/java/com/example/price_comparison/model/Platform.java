@@ -4,8 +4,8 @@ public enum Platform {
     JD("jd"),
     TMALL("tmall"),
     TAOBAO("taobao"),
-    VIP("weipinhui"),
-    DANGDANG("dangdang");
+    VIP("vip"),
+    ;
     
     private final String name;
 
