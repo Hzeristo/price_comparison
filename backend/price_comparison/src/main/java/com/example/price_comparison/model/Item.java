@@ -24,16 +24,17 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(nullable = false)
     @NotNull(message = "Name cannot be null")
     @NotBlank(message = "Name cannot be empty")
+    @Pattern(regexp = "^[a-zA-Z0-9_]{5,255}$", message = "Invalid name")
     private String name;
 
     @Column(name = "category_id", nullable = false)
     @NotNull(message = "Category ID cannot be null")
-    private Integer categoryId;
+    private int categoryId;
 
     @Column(nullable = false, length = 15)
     @NotNull(message = "Platform cannot be null")
@@ -43,12 +44,20 @@ public class Item {
     @Column(nullable = false)
     @NotNull(message = "Image cannot be null")
     @NotBlank(message = "Image cannot be empty")
+    @Pattern(regexp = "^https?://[^\\s]+$", message = "Invalid image URL")
     private String image;
 
     @Column(nullable = false)
     @NotNull(message = "URL cannot be null")
     @NotBlank(message = "URL cannot be empty")
+    @Pattern(regexp = "^https?://[^\\s]+$", message = "Invalid URL")
     private String url;
+
+    @Column(nullable = false)
+    @NotNull(message = "Price cannot be null")
+    @NotBlank(message = "Price cannot be empty")
+    @Pattern(regexp = "^[0-9]+(\\.[0-9][0-9]?)?$", message = "Invalid price")
+    private double price;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -64,7 +73,7 @@ public class Item {
     }
 
     /**
-     * Updates the updatedAt field before updating the item in the database.
+     * Prepares the item object before updating in the database.
      */
     @PreUpdate
     public void preUpdate() {

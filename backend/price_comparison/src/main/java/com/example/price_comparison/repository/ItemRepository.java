@@ -45,11 +45,32 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
      * @return The item with the given category id, or null if no such item exists.
      */
     List<Item> findByCategoryId(Integer categoryId);
-    
-     /**
+
+    /**
      * Find an item by query condition.
-     * @param condition The query condition
+     * @param name The name of the item to find.
+     * @param categoryId The category id of the item to find.
+     * @param maxPrice The maximum price of the item to find.
+     * @param minPrice The minimum price of the item to find.
+     * @param platforms The platforms of the item to find.
+     * @param sortBy The field to sort by.
+     * @param ascending Whether to sort in ascending order or not.
      * @return The item with the given query condition, or null if no such item exists.
      */
-    //List<Item> findByConditionedQuery(ItemQueryConditions condition);
+    @Query("SELECT i FROM Item i WHERE " +
+        "(:name IS NULL OR i.name LIKE %:name%) AND " +
+        "(:categoryId IS NULL OR i.categoryId = :categoryId) AND " +
+        "(:maxPrice IS NULL OR i.price <= :maxPrice) AND " +
+        "(:minPrice IS NULL OR i.price >= :minPrice) AND " +
+        "(:platforms IS NULL OR i.platform IN :platforms) " +
+        "ORDER BY CASE WHEN :sortBy = 'price' THEN i.price END " +
+        "ORDER BY CASE WHEN :ascending THEN 1 ELSE 0 END")
+    List<Item> findByConditionedQuery(@Param("name") String name, 
+                                    @Param("categoryId") Integer categoryId, 
+                                    @Param("maxPrice") Double maxPrice, 
+                                    @Param("minPrice") Double minPrice, 
+                                    @Param("platforms") List<Platform> platforms, 
+                                    @Param("sortBy") String sortBy, 
+                                    @Param("ascending") boolean ascending);
+    List<Item> itemExistsByName(String name);
 }
