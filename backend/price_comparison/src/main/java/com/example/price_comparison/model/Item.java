@@ -1,13 +1,13 @@
 package com.example.price_comparison.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -26,37 +26,41 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
+    @Column(name = "sku_id", nullable = false, columnDefinition = "varchar(63) default ''")
+    @NotNull(message = "Platform id cannot be null")
+    @NotBlank(message = "Platform id cannot be empty")
+    private String skuid;
+
+    @Column(nullable = false, columnDefinition = "varchar(255) default ''")
     @NotNull(message = "Name cannot be null")
     @NotBlank(message = "Name cannot be empty")
     @Pattern(regexp = "^[a-zA-Z0-9_]{5,255}$", message = "Invalid name")
     private String name;
 
-    @Column(name = "category_id", nullable = false)
+    @Column(name = "category_id", nullable = false, columnDefinition = "int default 0")
     @NotNull(message = "Category ID cannot be null")
     private int categoryId;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 15, columnDefinition = "varchar(15) default ''")
     @NotNull(message = "Platform cannot be null")
     @NotBlank(message = "Platform cannot be empty")
     private String platform;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255) default ''")
     @NotNull(message = "Image cannot be null")
     @NotBlank(message = "Image cannot be empty")
     @Pattern(regexp = "^https?://[^\\s]+$", message = "Invalid image URL")
     private String image;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255) default ''")
     @NotNull(message = "URL cannot be null")
     @NotBlank(message = "URL cannot be empty")
     @Pattern(regexp = "^https?://[^\\s]+$", message = "Invalid URL")
     private String url;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "decimal(10,2) default 0.00")
     @NotNull(message = "Price cannot be null")
     @NotBlank(message = "Price cannot be empty")
-    @Pattern(regexp = "^[0-9]+(\\.[0-9][0-9]?)?$", message = "Invalid price")
     private double price;
 
     private LocalDateTime createdAt;
