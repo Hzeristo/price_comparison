@@ -14,36 +14,5 @@ import com.example.price_comparison.service.ApiService;
 @RequestMapping("/api")
 public class ApiController {
 
-    @Autowired
-    private ApiService apiService;
-
-    @Value("${api.similarity.url}")
-    private String similarityUrl;
-
-    @Value("${hanlp.similarity.path}")
-    private String hanlpSimilarityPath;
-
-    @Getter
-    @Setter
-    public static class SimilarityRequest {
-        private String text1;
-        private String text2;
-    }
-
-    /**
-     * send similarity post request to similarity api 
-     * @param similarityRequest
-     * @return ResponseEntity with similarity score
-     */
-    @PostMapping("/similarity/send")
-    public ResponseEntity<String> sendSimilarityPost(@RequestBody SimilarityRequest similarityRequest) {
-        // 将请求体转为 JSON 字符串
-        String jsonPayload = String.format("{\"text1\": \"%s\", \"text2\": \"%s\"}", 
-            similarityRequest.getText1(), 
-            similarityRequest.getText2());
-        String result = apiService.sendPostRequest(similarityUrl, jsonPayload);
-        return ResponseEntity.ok(result);
-    }
-
 }
 

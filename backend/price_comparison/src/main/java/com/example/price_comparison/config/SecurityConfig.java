@@ -33,20 +33,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .authorizeRequests()
+            .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/home/**").permitAll()
                 .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
-            .and()
-            .formLogin()
+            )
+            .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/home", false)
-                .failureUrl("/login?error=true")  
+                .failureUrl("/login?error=true")
                 .permitAll()
-            .and()
-            .logout()
-                .permitAll();
+            )
+            .logout(logout -> logout.permitAll());
         return http.build();
     }
 

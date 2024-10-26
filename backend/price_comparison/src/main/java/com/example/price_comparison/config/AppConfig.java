@@ -10,9 +10,6 @@ import java.util.Map;
 @Configuration
 public class AppConfig {
 
-    @Value("${api.similarity.url}")
-    private String similarityUrl;
-
     @Value("${dictionary.paths.jd}")
     private String jdDictionaryPath;
 
@@ -25,22 +22,18 @@ public class AppConfig {
     @Value("${dictionary.paths.vip}")
     private String vipDictionaryPath;
 
-    @Value("${hanlp.similarity.path}")
-    private String hanlpSimilarityPath;
-    
+    @Value("${hanlp.api.url}")
+    private String apiUrl;
+
+    @Value("${hanlp.auth}")
+    private String apiKey;
+
+    @Value("${edge.driver.local.path}")
+    private String edgeDriverLocalPath;
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
-    }
-
-    @Bean
-    public String similarityUrl() {
-        return similarityUrl; 
-    }
-
-    @Bean
-    public String hanlpSimilarityPath() {
-        return hanlpSimilarityPath;
     }
 
     @Bean
@@ -51,5 +44,20 @@ public class AppConfig {
         paths.put("taobao", taobaoDictionaryPath);
         paths.put("vip", vipDictionaryPath);
         return paths;
+    }
+
+    @Bean
+    public String apiUrl() {
+        return apiUrl;
+    }
+
+    @Bean
+    public String apiKey() {
+        return apiKey;
+    }
+
+    @Bean
+    public String edgeDriverLocalPath() {
+        return edgeDriverLocalPath;
     }
 }
