@@ -13,33 +13,49 @@ public class FavoriteService {
     @Autowired
     private FavoriteRepository favoriteRepository;
 
-    // 添加收藏
+    /**
+     * Add a new favorite item
+     * @param favorite
+     * @return Favorite object added
+     */
     public Favorite addFavorite(Favorite favorite) {
         return favoriteRepository.save(favorite);
     }
 
-    // 删除收藏
+    /**
+     * Remove a favorite item
+     * @param favorite
+     */
     public void removeFavorite(Favorite favorite) {
         favoriteRepository.delete(favorite);
     }
-
+    
+    /**
+     * Remove a favorite item by id
+     * @param id
+     */
     public void removeFavoriteById(int id) {
         favoriteRepository.deleteById(id);
     }
-
-    public boolean existsById(Favorite favorite) {
-        return favoriteRepository.existsById(favorite.getId());
+    
+    /**
+     * check whether an item is in a user's favorite list
+     * @param itemId
+     * @param userId
+     * @return 
+     */
+    public boolean existsInUserFavorites(int itemId, int userId) {
+        List<Favorite> favors = favoriteRepository.findByUserId(userId);
+        return favors.stream()
+                      .anyMatch(favorite -> favorite.getItemId() == itemId);
     }
 
-    public boolean existsById(int id) {
-        return favoriteRepository.existsById(id);
-    }
-
-    public boolean existsByUser(Favorite favorite) {
-        return favoriteRepository.existsByUser(favorite.getUser_id());
-    }
-
-    public List<Favorite> findByUserId(int user_id) {
-        return favoriteRepository.findByUserId(user_id);
+    /**
+     * Get all favorite items of a user by user_id
+     * @param user_id
+     * @return List of Favorite objects
+     */
+    public List<Favorite> findByUserId(int userId) {
+        return favoriteRepository.findByUserId(userId);
     }
 }
