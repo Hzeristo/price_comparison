@@ -3,16 +3,20 @@ package com.example.price_comparison.controller;
 import com.example.price_comparison.model.User;
 import com.example.price_comparison.service.UserService;
 import com.example.price_comparison.util.ApiResponse;
+import com.example.price_comparison.util.validation.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
 /**
  * Controller class for managing user-related API endpoints.
  */
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -28,9 +32,10 @@ public class UserController {
      * @return A list of all users.
      * @url GET /user/all
      */
-    @GetMapping("/user/all")
-    public List<User> findAllUsers() {
-        return userService.findAllUsers();
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<User>>> findAllUsers() {
+        List<User> users = userService.findAllUsers(); // Fetch the list of users
+        return ResponseEntity.ok(ApiResponse.success(users));
     }
 
     /**
@@ -40,10 +45,10 @@ public class UserController {
      * @return The created user.
      * @url POST /user/new
      */
-    @PostMapping("/user/new")
-    public ApiResponse<User> createUser(@Valid @RequestBody User user) {
+    @PostMapping("/new")
+    public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody User user) {
         User createdUser = userService.createUser(user);
-        return ApiResponse.success(createdUser);
+        return ResponseEntity.ok(ApiResponse.success(createdUser));
     }
 
     /**
@@ -51,17 +56,13 @@ public class UserController {
      *
      * @param username The username of the user.
      * @return The user associated with the given username.
-     * @url GET /user/username?username={username}
+     * @url GET /user/by-username
      */
-    @GetMapping("/user/username")
-    public ApiResponse<User> getUserByUsername(
-        @RequestParam
-        @NotNull(message = "Username cannot be null")
-        @NotBlank(message = "Username cannot be empty")
-        @Pattern(regexp = "^[a-zA-Z0-9_]{5,255}$", message = "Username should be between 5 and 255 characters and can only contain letters, numbers, and underscores")
-        String username) {
+    @GetMapping("/by-username")
+    public ResponseEntity<ApiResponse<User>> getUserByUsername(
+            @RequestParam @NotNull @ValidUsername String username) {
         User user = userService.getUserByUsername(username);
-        return ApiResponse.success(user);
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     /**
@@ -69,17 +70,13 @@ public class UserController {
      *
      * @param email The email to check.
      * @return true if the user exists, false otherwise.
-     * @url GET /user/email?email={email}
+     * @url GET /user/check-email
      */
-    @GetMapping("/user/email")
-    public ApiResponse<Boolean> userExistsByEmail(
-        @RequestParam
-        @NotNull(message = "Email cannot be null")
-        @NotBlank(message = "Email cannot be empty")
-        @Email(message = "Email should be valid")
-        String email) {
+    @GetMapping("/check-email")
+    public ResponseEntity<ApiResponse<Boolean>> userExistsByEmail(
+            @RequestParam @NotNull @ValidEmail String email) {
         boolean exists = userService.userExistsByEmail(email);
-        return ApiResponse.success(exists);
+        return ResponseEntity.ok(ApiResponse.success(exists));
     }
 
     /**
@@ -87,17 +84,13 @@ public class UserController {
      *
      * @param phone The phone number to check.
      * @return true if the user exists, false otherwise.
-     * @url GET /user/phone?phone={phone}
+     * @url GET /user/check-phone
      */
-    @GetMapping("/user/phone")
-    public ApiResponse<Boolean> userExistsByPhone(
-        @RequestParam 
-        @NotNull(message = "Phone cannot be null")
-        @NotBlank(message = "Phone cannot be empty")
-        @Pattern(regexp = "^\\d{13}$", message = "Phone number should be 13 digits")
-        String phone) {
+    @GetMapping("/check-phone")
+    public ResponseEntity<ApiResponse<Boolean>> userExistsByPhone(
+            @RequestParam @NotNull @ValidPhone String phone) {
         boolean exists = userService.userExistsByPhone(phone);
-        return ApiResponse.success(exists);
+        return ResponseEntity.ok(ApiResponse.success(exists));
     }
 
     /**
@@ -106,33 +99,32 @@ public class UserController {
      * @param username The username of the user to be updated.
      * @param user The user object containing updated information.
      * @return The updated user.
-     * @url PUT /user/all?username={username}
+     * @url PUT /user/update
      */
-    @PutMapping("/user/all")
-    public ApiResponse<User> updateUser(@PathVariable String username, @Valid @RequestBody User user) {
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse<User>> updateUser(
+            @RequestParam @NotNull @ValidUsername String username,
+            @Valid @RequestBody User user) {
         User updatedUser = userService.updateUser(username, user);
-        return ApiResponse.success(updatedUser);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser));
     }
 
     /**
      * Updates a user's username.
      *
-     * @param username The username of the user.
+     * @param username The current username of the user.
      * @param newUsername The new username.
      * @return The updated user.
-     * @url PUT /user/username?username={username}&newUsername={newUsername}
+     * @url PUT /user/update-username
      */
-    @PutMapping("/user/username")
-    public ApiResponse<User> updateUsername(@PathVariable String username, 
-        @RequestParam 
-        @NotNull(message = "Username cannot be null")
-        @NotBlank(message = "Username cannot be empty")
-        @Pattern(regexp = "^[a-zA-Z0-9_]{5,255}$", message = "Username should be between 5 and 255 characters and can only contain letters, numbers, and underscores")
-        String newUsername) {
-            User user = userService.getUserByUsername(username);
-            user.setUsername(newUsername);
-            User updatedUser = userService.updateUser(username, user);
-            return ApiResponse.success(updatedUser);
+    @PutMapping("/update-username")
+    public ResponseEntity<ApiResponse<User>> updateUsername(
+            @RequestParam @NotNull @ValidUsername String username,
+            @RequestParam @NotNull @ValidUsername String newUsername) {
+        User user = userService.getUserByUsername(username);
+        user.setUsername(newUsername);
+        User updatedUser = userService.updateUser(username, user);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser));
     }
 
     /**
@@ -141,19 +133,16 @@ public class UserController {
      * @param username The username of the user.
      * @param password The new password.
      * @return The updated user.
-     * @url PUT /user/pwd?username={username}&password={password}
+     * @url PUT /user/update-password
      */
-    @PutMapping("/user/pwd")
-    public ApiResponse<User> updatePassword(@PathVariable String username, 
-        @RequestParam 
-        @NotNull(message = "Password cannot be null")
-        @NotBlank(message = "Password cannot be empty")
-        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,255}$", message = "Password should be between 8 and 255 characters and contain at least one uppercase letter, one lowercase letter, and one digit")
-        String password) {
+    @PutMapping("/update-password")
+    public ResponseEntity<ApiResponse<User>> updatePassword(
+            @RequestParam @NotNull @ValidUsername String username,
+            @RequestParam @NotNull @ValidPassword String password) {
         User user = userService.getUserByUsername(username);
         user.setPassword(password);
         User updatedUser = userService.updateUser(username, user);
-        return ApiResponse.success(updatedUser);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser));
     }
 
     /**
@@ -162,19 +151,16 @@ public class UserController {
      * @param username The username of the user.
      * @param email The new email.
      * @return The updated user.
-     * @url PUT /user/email?username={username}&email={email}
+     * @url PUT /user/update-email
      */
-    @PutMapping("/user/email")
-    public ApiResponse<User> updateEmail(@PathVariable String username, 
-        @RequestParam 
-        @NotNull(message = "Email cannot be null")
-        @NotBlank(message = "Email cannot be empty")
-        @Email(message = "Email should be valid")
-        String email) {
+    @PutMapping("/update-email")
+    public ResponseEntity<ApiResponse<User>> updateEmail(
+            @RequestParam @NotNull @ValidUsername String username,
+            @RequestParam @NotNull @ValidEmail String email) {
         User user = userService.getUserByUsername(username);
         user.setEmail(email);
         User updatedUser = userService.updateUser(username, user);
-        return ApiResponse.success(updatedUser);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser));
     }
 
     /**
@@ -183,19 +169,16 @@ public class UserController {
      * @param username The username of the user.
      * @param phone The new phone number.
      * @return The updated user.
-     * @url PUT /user/phone?username={username}&phone={phone}
+     * @url PUT /user/update-phone
      */
-    @PutMapping("/user/phone")
-    public ApiResponse<User> updatePhone(@PathVariable String username, 
-        @RequestParam 
-        @NotNull(message = "Phone cannot be null")
-        @NotBlank(message = "Phone cannot be empty")
-        @Pattern(regexp = "^\\d{13}$", message = "Phone number should be 13 digits")
-        String phone) {
+    @PutMapping("/update-phone")
+    public ResponseEntity<ApiResponse<User>> updatePhone(
+            @RequestParam @NotNull @ValidUsername String username,
+            @RequestParam @NotNull @ValidPhone String phone) {
         User user = userService.getUserByUsername(username);
         user.setPhone(phone);
         User updatedUser = userService.updateUser(username, user);
-        return ApiResponse.success(updatedUser);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser));
     }
 
     /**
@@ -204,12 +187,14 @@ public class UserController {
      * @param username The username of the user.
      * @param isAdmin Whether the user should be an admin or not.
      * @return A success response.
-     * @url PUT /user/admin?username={username}&isAdmin={isAdmin}
+     * @url PUT /user/manage-admin
      */
-    @PutMapping("/user/admin")
-    public ApiResponse<User> manageAdmin(@PathVariable String username, @RequestParam boolean isAdmin) {
+    @PutMapping("/manage-admin")
+    public ResponseEntity<ApiResponse<User>> manageAdmin(
+            @RequestParam @NotNull @ValidUsername String username,
+            @RequestParam boolean isAdmin) {
         userService.manageAdmin(username, isAdmin);
-        return ApiResponse.success(null);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     /**
@@ -217,11 +202,12 @@ public class UserController {
      *
      * @param username The username of the user to be deleted.
      * @return A success response.
-     * @url DELETE /user?username={username}
+     * @url DELETE /user/delete
      */
-    @DeleteMapping("/user")
-    public ApiResponse<Void> deleteUser(@PathVariable String username) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(
+            @RequestParam @NotNull @ValidUsername String username) {
         userService.deleteUser(username);
-        return ApiResponse.success(null);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
