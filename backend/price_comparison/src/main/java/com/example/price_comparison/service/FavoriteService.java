@@ -47,7 +47,7 @@ public class FavoriteService {
     public boolean existsInUserFavorites(int itemId, int userId) {
         List<Favorite> favors = favoriteRepository.findByUserId(userId);
         return favors.stream()
-                      .anyMatch(favorite -> favorite.getItemId() == itemId);
+                      .anyMatch(favorite -> favorite.getItem_id() == itemId);
     }
 
     /**

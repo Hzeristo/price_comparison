@@ -95,7 +95,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
         @Param("categoryId") Integer categoryId,
         @Param("maxPrice") double maxPrice,
         @Param("minPrice") double minPrice,
-        @Param("platforms") List<Platform> platforms,
+        @Param("platforms") List<String> platforms,
         @Param("sortBy") String sortBy,
         @Param("ascending") boolean ascending
     );

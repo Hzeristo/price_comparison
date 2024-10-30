@@ -153,7 +153,7 @@ public class UserService {
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
-
+ 
     /**
      * Validates a user object for duplicate fields.
      *

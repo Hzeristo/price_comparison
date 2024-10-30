@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemQueryConditions {
+public class ItemQueryConditions { 
     private String name;
     private String skuId;
     private int categoryId;
@@ -25,5 +25,5 @@ public class ItemQueryConditions {
     private double minPrice;
     private String sortBy;             
     private boolean ascending;         
-    private List<Platform> platforms; 
+    private List<String> platforms; 
 }

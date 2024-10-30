@@ -148,6 +148,54 @@ public class ItemService {
         return itemRepository.existsBySkuId(skuId);
     }
 
+    /**
+     * Get price history by item id
+     * @param itemId 
+     * @return List of price history found
+     * @throws PriceHistoryNotFoundException if no price history found
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public List<PriceHistory> getPriceHistoryById(int itemId) {
+        return Optional.ofNullable(priceHistoryRepository.findByItemId(itemId))
+                .orElseThrow(() -> new PriceHistoryNotFoundException("Price History not found for: " + itemId));
+    }
+    
+    /**
+     * Get price history by item
+     * @param item
+     * @return List of price history found
+     * @throws PriceHistoryNotFoundException if no price history found
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public List<PriceHistory> getPriceHistoryById(Item item) {
+        return Optional.ofNullable(priceHistoryRepository.findByItemId(item.getId()))
+                .orElseThrow(() -> new PriceHistoryNotFoundException("Price History not found for: " + item.getName()));
+    }
+    
+    /**
+     * Query price history by conditions
+     * @param conditions
+     * @return List of price history found
+     * @throws PriceHistoryNotFoundException if no price history found
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public List<PriceHistory> queryPriceHistory(PriceHistoryQueryConditions condition) {
+        return Optional.ofNullable(priceHistoryRepository.findByConditionedQuery(
+                    condition.getItemId(),
+                    condition.getPlatform(),
+                    condition.getMaxPrice(),
+                    condition.getMinPrice(),
+                    condition.getStartDate(),
+                    condition.getEndDate()
+                ))
+                .orElseThrow(() -> new PriceHistoryNotFoundException("Price History not found under such query"));
+    }
+    
+    /**
+     * Update price history if price changed
+     * @param foundItem item found
+     * @param newItem item to be updated
+     */
     private void updatePriceHistoryIfChanged(Item foundItem, Item newItem) {
         if (newItem.getPrice() != (foundItem.getPrice())) {
             PriceHistory priceHistory = new PriceHistory();
@@ -158,6 +206,11 @@ public class ItemService {
         }
     }
     
+    /**
+     * Update item fields
+     * @param foundItem item found
+     * @param newItem item to be updated
+     */
     private void updateItemFields(Item foundItem, Item newItem) {
         if (newItem.getName() != null) {
             foundItem.setName(newItem.getName());

@@ -1,8 +1,6 @@
 package com.example.price_comparison.service.factory;
 
 import com.example.price_comparison.service.CategoryService;
-import com.example.price_comparison.service.categories.JDCategoryService;
-import com.example.price_comparison.service.categories.OtherPlatformCategoryService; // 其他平台服务的示例
 import com.example.price_comparison.model.Platform;
 import com.example.price_comparison.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +15,16 @@ public class CategoryServiceFactory {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private final Map<String, String> dictionaryPaths = new HashMap<>();
+    @Autowired
+    private Map<String, String> dictionaryPaths;
 
-    public CategoryServiceFactory() {
-        // 初始化字典路径映射
-        dictionaryPaths.put("jd", "/dictionary/jdDict.csv");
-        //
-    }
-
-    public CategoryService createCategoryService(String platform) {
+    public CategoryService createCategoryService(Platform platform) {
         String dictionaryPath = getDictionaryPath(platform);
         return new CategoryService(categoryRepository, dictionaryPath);
     }
 
-    private String getDictionaryPath(String platform) {
-        String path = dictionaryPaths.get(platform.toLowerCase());
+    private String getDictionaryPath(Platform platform) {
+        String path = dictionaryPaths.get(platform.getName());
         if (path == null) {
             throw new IllegalArgumentException("Unsupported platform for creating dictionary: " + platform);
         }

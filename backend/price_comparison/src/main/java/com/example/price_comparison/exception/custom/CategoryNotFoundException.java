@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public class CategoryNotFoundException extends RuntimeException {
     private String message;
     
