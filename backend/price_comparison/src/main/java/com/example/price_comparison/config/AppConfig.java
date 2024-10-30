@@ -2,12 +2,16 @@ package com.example.price_comparison.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@EnableAsync
+@EnableScheduling
 public class AppConfig {
 
     @Value("${dictionary.paths.jd}")
