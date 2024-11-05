@@ -9,16 +9,13 @@ import java.util.List;
 
 public interface ProductSpider {
 
-    List<Item> startRequests(String category); // 启动请求并抓取数据
+    List<Item> startRequests(String query, String type); // 启动请求并抓取数据
+
+    void close();
 
     default String getStartUrl(String path, String category) {
-        try {
-            JsonObject categoryDict = JsonParser.parseReader(new FileReader(path)).getAsJsonObject();
-            return getUrlFromDict(categoryDict, category);
-        } catch (Exception e) {
-            System.err.println("分类字典文件未找到: " + e.getMessage());
-            return null;
-        }
+        JsonObject categoryDict = JsonParser.parseReader(new FileReader(path)).getAsJsonObject();
+        return getUrlFromDict(categoryDict, category);
     }
 
     default String getUrlFromDict(JsonObject categoryDict, String category) {

@@ -1,5 +1,6 @@
 package com.example.price_comparison.model;
 
+import com.example.price_comparison.util.validation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,27 +34,19 @@ public class User {
     private Integer id;
 
     @Column(unique = true, nullable = false)
-    @NotNull(message = "Username cannot be null")
-    @NotBlank(message = "Username cannot be empty")
-    @Pattern(regexp = "^[a-zA-Z0-9_]{5,255}$", message = "Username should be between 5 and 255 characters and can only contain letters, numbers, and underscores")
+    @ValidUsername
     private String username;
 
     @Column(nullable = false)
-    @NotNull(message = "Password cannot be null")
-    @NotBlank(message = "Password cannot be empty")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,255}$", message = "Password should be between 8 and 255 characters and contain at least one uppercase letter, one lowercase letter, and one digit")
+    @ValidPassword
     private String password;
 
     @Column(unique = true, nullable = false)
-    @NotNull(message = "Email cannot be null")
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Email should be valid")
+    @ValidPhone
     private String email;
 
     @Column(unique = true, nullable = false)
-    @NotNull(message = "Phone cannot be null")
-    @NotBlank(message = "Phone cannot be empty")
-    @Pattern(regexp = "^\\d{13}$", message = "Phone number should be 13 digits")
+    @ValidPhone
     private String phone;
 
     @Builder.Default

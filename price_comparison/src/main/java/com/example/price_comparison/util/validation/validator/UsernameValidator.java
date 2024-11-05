@@ -12,6 +12,15 @@ public class UsernameValidator implements ConstraintValidator<ValidUsername, Str
 
     @Override
     public boolean isValid(String username, ConstraintValidatorContext context) {
-        return username != null && username.matches(USERNAME_PATTERN) && username != "";
+        if (username == null || username.isEmpty()) {
+            return false; // 如果用户名为null或空字符串，返回false
+        }
+
+        boolean valid = username.matches(USERNAME_PATTERN);
+        if (!valid) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Username must be between 5 and 255 characters long and can only contain letters, numbers, and underscores.").addConstraintViolation();
+        }
+        return valid;
     }
 }

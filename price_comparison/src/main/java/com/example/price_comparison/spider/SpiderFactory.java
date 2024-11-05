@@ -1,7 +1,5 @@
 package com.example.price_comparison.spider;
 
-
-
 public class SpiderFactory {
     
     public SpiderFactory() {}

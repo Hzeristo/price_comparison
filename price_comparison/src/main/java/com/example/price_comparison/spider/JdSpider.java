@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.concurrent.TimeUnit;
 import java.io.FileReader;
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
 public class JdSpider implements ProductSpider {
 
-    private String category;
     private WebDriver driver;
 
     @Autowired
@@ -32,14 +32,17 @@ public class JdSpider implements ProductSpider {
         driver = new EdgeDriver(options);
     }
 
-    public List<Item> startRequests(String category) {
-        this.category = category;
+    public List<Item> startRequests(String query, String type) {
         setupDriver();
-                String startUrl = getStartUrl(jdDictionaryPath, category);
+        String startUrl;
 
-        if (startUrl == null) {
-            System.err.println("未找到分类: " + category);
-            return null;
+        if ("keyword".equalsIgnoreCase(type)) {
+            startUrl = "https://search.jd.com/Search?keyword=" + query;
+        } else if ("category".equalsIgnoreCase(type)) {
+            startUrl = Optional.ofNullable(getStartUrl(jdDictionaryPath, query))
+                .orElseThrow(() -> new IllegalArgumentException("未找到分类: " + query));
+        } else {
+            throw new IllegalArgumentException("不支持的爬虫类型: " + type);
         }
 
         try {
@@ -53,7 +56,6 @@ public class JdSpider implements ProductSpider {
                 String price = item.findElement(By.cssSelector("div div strong i")).getText();
                 String skuid = item.getAttribute("data-sku");
                 String detailsUrl = item.findElement(By.cssSelector("div div.p-img a")).getAttribute("href");
-                
                 Item product = Item.builder()
                     .name(title)
                     .price((double)Double.parseDouble(price))
@@ -63,18 +65,18 @@ public class JdSpider implements ProductSpider {
                     //.categoryId()
                     .build();
                 res.add(product);
-/* 
-                System.out.println("商品标题: " + title);
-                System.out.println("商品价格: " + price);
-                System.out.println("SKU ID: " + skuid);
-                System.out.println("详情链接: " + detailsUrl);
-                System.out.println("---------"); */
             }
             return res;
         } catch (Exception e) {
             System.err.println("访问京东时发生错误: " + e.getMessage());
             return null;
         } finally {
+            close();
+        }
+    }
+
+    public void close() {
+        if (driver != null) {
             driver.quit();
         }
     }

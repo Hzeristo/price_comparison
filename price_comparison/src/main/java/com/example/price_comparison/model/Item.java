@@ -1,5 +1,6 @@
 package com.example.price_comparison.model;
 
+import com.example.price_comparison.util.validation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotBlank;
@@ -32,9 +33,7 @@ public class Item {
     private String skuid;
 
     @Column(nullable = false, columnDefinition = "varchar(255) default ''")
-    @NotNull(message = "Name cannot be null")
-    @NotBlank(message = "Name cannot be empty")
-    @Pattern(regexp = "^[a-zA-Z0-9_]{5,255}$", message = "Invalid name")
+    @ValidName
     private String name;
 
     @Column(name = "category_id", nullable = false, columnDefinition = "int default 0")
@@ -47,15 +46,11 @@ public class Item {
     private String platform;
 
     @Column(nullable = false, columnDefinition = "varchar(255) default ''")
-    @NotNull(message = "Image cannot be null")
-    @NotBlank(message = "Image cannot be empty")
-    @Pattern(regexp = "^https?://[^\\s]+$", message = "Invalid image URL")
+    @ValidUrl
     private String image;
 
     @Column(nullable = false, columnDefinition = "varchar(255) default ''")
-    @NotNull(message = "URL cannot be null")
-    @NotBlank(message = "URL cannot be empty")
-    @Pattern(regexp = "^https?://[^\\s]+$", message = "Invalid URL")
+    @ValidUrl
     private String url;
 
     @Column(nullable = false, columnDefinition = "decimal(10,2) default 0.00")

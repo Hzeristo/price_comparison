@@ -12,6 +12,15 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
-        return password != null && password.matches(PASSWORD_PATTERN) && password != "";
+        if (password == null || password.isEmpty()) {
+            return false; // 如果密码为null或空字符串，返回false
+        }
+
+        boolean valid = password.matches(PASSWORD_PATTERN);
+        if (!valid) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Password must be between 8 and 255 characters long and contain at least one uppercase letter, one lowercase letter, and one digit.").addConstraintViolation();
+        }
+        return valid;
     }
 }

@@ -13,6 +13,6 @@ import com.example.price_comparison.service.ApiService;
 @RestController
 @RequestMapping("/api")
 public class ApiController {
-
+    
 }
 

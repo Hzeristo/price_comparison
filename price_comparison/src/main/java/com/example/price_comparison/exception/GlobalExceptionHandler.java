@@ -3,15 +3,14 @@ package com.example.price_comparison.exception;
 import com.example.price_comparison.util.ApiResponse;
 import com.example.price_comparison.exception.custom.*;
 import com.example.price_comparison.model.Platform;
-
 import jakarta.validation.ConstraintViolationException;
+
+import java.net.http.HttpRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 
 /**
  * Global exception handler for the application.
@@ -20,39 +19,27 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class GlobalExceptionHandler {
 
     /**
-     * Handles custom UserNotFoundException.
+     * Handles custom CategoryNotFoundException.
      *
      * @param ex the exception thrown
      * @return a standardized API response
      */
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleUserNotFound(UserNotFoundException ex) {
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleCategoryNotFoundException(CategoryNotFoundException ex) {
         ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     /**
-     * Handles custom UnauthorizedException.
+     * Handles ConstraintViolationException.
      *
      * @param ex the exception thrown
      * @return a standardized API response
      */
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-    }
-    
-    /**
-     * Handles custom DuplicateResourceException.
-     *
-     * @param ex the exception thrown
-     * @return a standardized API response
-     */
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ApiResponse<String>> handleDuplicateResourceException(DuplicateResourceException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage(), ex.getType());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        ApiResponse<String> response = ApiResponse.failure("Invalid input for database: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     /**
@@ -68,15 +55,27 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles custom UnnecessaryUpdateException.
+     * Handles custom DuplicateResourceException.
      *
      * @param ex the exception thrown
      * @return a standardized API response
      */
-    @ExceptionHandler(UnnecessaryUpdateException.class)
-    public ResponseEntity<ApiResponse<String>> handleUnnecessaryUpdateException(UnnecessaryUpdateException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<String>> handleDuplicateResourceException(DuplicateResourceException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage(), ex.getType());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    /**
+     * Handles custom ItemNotFoundException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleItemNotFoundException(ItemNotFoundException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     /**
@@ -92,18 +91,52 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles ConstraintViolationException.
+     * Handles custom PriceHistoryNotFound.
      *
      * @param ex the exception thrown
      * @return a standardized API response
      */
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(ConstraintViolationException ex) {
-        ApiResponse<String> response = ApiResponse.failure("Invalid input for database: " + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    @ExceptionHandler(PriceHistoryNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handlePriceHistoryNotFound(PriceHistoryNotFoundException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
-    
-    
+   
+    /**
+     * Handles custom UnauthorizedException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    /**
+     * Handles custom UnnecessaryUpdateException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(UnnecessaryUpdateException.class)
+    public ResponseEntity<ApiResponse<String>> handleUnnecessaryUpdateException(UnnecessaryUpdateException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    /**
+     * Handles custom UserNotFoundException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleUserNotFoundException(UserNotFoundException ex) {
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
 
     /**
      * Handles IllegalArgumentException.
@@ -112,7 +145,7 @@ public class GlobalExceptionHandler {
      * @return a standardized API response
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<String>>handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         ApiResponse<String> response = ApiResponse.failure("Invalid input for matching: " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
