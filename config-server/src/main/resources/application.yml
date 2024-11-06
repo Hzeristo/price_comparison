@@ -9,7 +9,7 @@ spring:
       server:
         git:
           uri: https://github.com/Hzeristo/price_comparison  # 配置文件存放的 Git 仓库
-          searchPaths: config-server/src/main/resources/conf                 # Git 仓库中的路径
+          searchPaths: config-server/src/main/resources/config                 # Git 仓库中的路径
 
   eureka:
     client:
@@ -18,4 +18,4 @@ spring:
       registerWithEureka: true  # 是否注册到 Eureka
       fetchRegistry: true  # 是否从 Eureka 获取服务注册信息
       instance:
-        hostname: main-service-host  # 服务实例的主机名
+        hostname: config-server-host  # 服务实例的主机名
