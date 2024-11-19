@@ -1,3 +1,13 @@
+server:
+  port: 8081
+
+jwt:
+  secret: your-secret-key
+  expiration: 86400000  # 1 day in milliseconds
+
+auth:
+  allowed-origin: http://localhost:3000
+
 spring:
   application:
     name: user-service
@@ -14,6 +24,12 @@ spring:
       hibernate:
         format_sql: true  # 格式化 SQL 输出
         use_sql_comments: true  # 在 SQL 中添加注释
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: your_password  # 如果有密码的话
+    timeout: 2000  # 超时时间
+
 
 eureka:
   client:
@@ -25,3 +41,4 @@ eureka:
       hostname: user-service-host  # 服务实例的主机名
   server:
     enable-self-preservation: false  # 禁用自我保护机制
+    

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Controller class for managing user-related API endpoints.
@@ -55,9 +57,9 @@ public class UserController {
      *
      * @param username The username of the user.
      * @return The user associated with the given username.
-     * @url GET /user/by-username
+     * @url GET /user/username
      */
-    @GetMapping("/by-username")
+    @GetMapping("/username")
     public ResponseEntity<ApiResponse<User>> getUserByUsername(
             @RequestParam @NotNull @ValidUsername String username) {
         User user = userService.getUserByUsername(username);
@@ -71,7 +73,7 @@ public class UserController {
      * @return true if the user exists, false otherwise.
      * @url GET /user/check-email
      */
-    @GetMapping("/check-email")
+    @GetMapping("/email")
     public ResponseEntity<ApiResponse<Boolean>> userExistsByEmail(
             @RequestParam @NotNull @ValidEmail String email) {
         boolean exists = userService.userExistsByEmail(email);
@@ -85,7 +87,7 @@ public class UserController {
      * @return true if the user exists, false otherwise.
      * @url GET /user/check-phone
      */
-    @GetMapping("/check-phone")
+    @GetMapping("/phone")
     public ResponseEntity<ApiResponse<Boolean>> userExistsByPhone(
             @RequestParam @NotNull @ValidPhone String phone) {
         boolean exists = userService.userExistsByPhone(phone);
@@ -93,93 +95,34 @@ public class UserController {
     }
 
     /**
-     * Updates an existing user's information.
-     *
+     * Updates user fields.
      * @param username The username of the user to be updated.
-     * @param user The user object containing updated information.
+     * @param newUsername The new username.
+     * @param newPassword The new password.
+     * @param newEmail The new email.
+     * @param newPhone The new phone number.
      * @return The updated user.
      * @url PUT /user/update
      */
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse<User>> updateUser(
-            @RequestParam @NotNull @ValidUsername String username,
-            @Valid @RequestBody User user) {
-        User updatedUser = userService.updateUser(username, user);
+    public ResponseEntity<ApiResponse<User>> updateUserFields(
+            @RequestParam @ValidUsername String username,
+            @RequestBody Map<String, Object> updates) {
+        User updatedUser = userService.updateUser(username, updates);
         return ResponseEntity.ok(ApiResponse.success(updatedUser));
     }
 
-    /**
-     * Updates a user's username.
-     *
-     * @param username The current username of the user.
-     * @param newUsername The new username.
-     * @return The updated user.
-     * @url PUT /user/update-username
-     */
-    @PutMapping("/update-username")
-    public ResponseEntity<ApiResponse<User>> updateUsername(
-            @RequestParam @NotNull @ValidUsername String username,
-            @RequestParam @NotNull @ValidUsername String newUsername) {
-        User user = userService.getUserByUsername(username);
-        user.setUsername(newUsername);
-        User updatedUser = userService.updateUser(username, user);
-        return ResponseEntity.ok(ApiResponse.success(updatedUser));
-    }
-
-    /**
-     * Updates a user's password.
-     *
-     * @param username The username of the user.
-     * @param password The new password.
-     * @return The updated user.
-     * @url PUT /user/update-password
-     */
-    @PutMapping("/update-password")
-    public ResponseEntity<ApiResponse<User>> updatePassword(
+    @GetMapping("validate")
+    public ResponseEntity<ApiResponse<User>> validateUser(
             @RequestParam @NotNull @ValidUsername String username,
             @RequestParam @NotNull @ValidPassword String password) {
-        User user = userService.getUserByUsername(username);
-        user.setPassword(password);
-        User updatedUser = userService.updateUser(username, user);
-        return ResponseEntity.ok(ApiResponse.success(updatedUser));
+        if (userService.validatePassword(username, password)) {
+            return ResponseEntity.ok(ApiResponse.success(userService.getUserByUsername(username)));
+        } else {
+            return ResponseEntity.ok(ApiResponse.failure("Invalid password"));
+        }
     }
-
-    /**
-     * Updates a user's email.
-     *
-     * @param username The username of the user.
-     * @param email The new email.
-     * @return The updated user.
-     * @url PUT /user/update-email
-     */
-    @PutMapping("/update-email")
-    public ResponseEntity<ApiResponse<User>> updateEmail(
-            @RequestParam @NotNull @ValidUsername String username,
-            @RequestParam @NotNull @ValidEmail String email) {
-        User user = userService.getUserByUsername(username);
-        user.setEmail(email);
-        User updatedUser = userService.updateUser(username, user);
-        return ResponseEntity.ok(ApiResponse.success(updatedUser));
-    }
-
-    /**
-     * Updates a user's phone number.
-     *
-     * @param username The username of the user.
-     * @param phone The new phone number.
-     * @return The updated user.
-     * @url PUT /user/update-phone
-     */
-    @PutMapping("/update-phone")
-    public ResponseEntity<ApiResponse<User>> updatePhone(
-            @RequestParam @NotNull @ValidUsername String username,
-            @RequestParam @NotNull @ValidPhone String phone) {
-        User user = userService.getUserByUsername(username);
-        user.setPhone(phone);
-        User updatedUser = userService.updateUser(username, user);
-        return ResponseEntity.ok(ApiResponse.success(updatedUser));
-    }
-
+    
     /**
      * Manages a user's admin role.
      *
