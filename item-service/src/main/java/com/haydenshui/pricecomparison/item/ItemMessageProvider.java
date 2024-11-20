@@ -1,5 +1,6 @@
 package com.haydenshui.pricecomparison.item;
 
+import com.haydenshui.pricecomparison.shared.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -10,11 +11,11 @@ import java.util.List;
 
 public class ItemMessageProvider {
     
-    private final RabbitTemplate rabbitTemplate;
-    private final ObjectMapper objectMapper; // 用于将对象序列化为 JSON
+    private RabbitTemplate rabbitTemplate;
+    private ObjectMapper objectMapper; // 用于将对象序列化为 JSON
 
     @Autowired
-    public ItemMessageProducer(RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
+    public void ItemMessageProducer(RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
     }

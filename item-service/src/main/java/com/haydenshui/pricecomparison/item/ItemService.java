@@ -204,9 +204,9 @@ public class ItemService {
      * @return The list of saved items.
      */
     @Transactional
-    public List<Item> saveItems(List<Item> items) {
+    public void saveItems(List<Item> items) {
         for(Item item : items) {
-            if(!itemExistsByName(item.getName()) && !itemExistsBySkuId(item.getSkuId()))
+            if(!itemExistsByName(item.getName()) && !itemExistsBySkuId(item.getSkuid()))
                 itemRepository.save(item);
         }
     }
