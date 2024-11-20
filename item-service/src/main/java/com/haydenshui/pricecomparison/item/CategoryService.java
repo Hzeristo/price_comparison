@@ -65,7 +65,6 @@ public class CategoryService {
      * @throws CategoryAlreadyExistsException if category already exists
      */
     @Deprecated
-    @PreAuthorize("hasRole('ADMIN')")
     public Category createCategory(Category category) {
         if (categoryRepository.existsByName(category.getName())) {
             throw new DuplicateResourceException("Category with name " + category.getName() + " already exists", "category");
@@ -79,7 +78,6 @@ public class CategoryService {
      * @return Category
      * @throws CategoryNotFoundException if category does not exist
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryById(int id) {
         return Optional.ofNullable(categoryRepository.findById(id))
             .orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found"));
@@ -90,7 +88,6 @@ public class CategoryService {
      * @param name 
      * @return Category
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryByName(String name) {
         return Optional.ofNullable(categoryRepository.findByName(name))
             .orElseThrow(() -> new CategoryNotFoundException("Category with name " + name + " not found"));
@@ -101,7 +98,6 @@ public class CategoryService {
      * @param name
      * @return Category
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryParent(String name) {
         return Optional.ofNullable(getCategoryByName(name).getParent())
             .orElseThrow(() -> new CategoryNotFoundException("Parent of category with name " + name + " not found"));
@@ -112,7 +108,6 @@ public class CategoryService {
      * @param name
      * @return Category
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public Category getCategoryChild(String name) {
         throw new NotImplementedException("not implemented: getCategoryChild()");
     }
@@ -122,7 +117,6 @@ public class CategoryService {
      * @param name
      * @return boolean
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public boolean existsByName(String name) {
         return categoryRepository.existsByName(name);
     }
@@ -130,7 +124,6 @@ public class CategoryService {
     /**
      * Print all categories
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public void printAllCategories() {
         System.out.println("All categories:");
         categoryRepository.findAll().forEach(System.out::println);

@@ -13,12 +13,18 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
+    @Autowired
+    private ItemMessageProvider itemMessageProvider;
+
+    @Autowired
+    private ItemMessageConsumer itemMessageConsumer;
+
     /**
      * Create a new item
      * @param item Item to be created
      * @return ResponseEntity with the created item
      */
-    @PostMapping
+    @PostMapping("/new")
     public ResponseEntity<Item> createItem(@RequestBody Item item) {
         Item createdItem = itemService.createItem(item);
         return ResponseEntity.ok(createdItem);
@@ -54,6 +60,7 @@ public class ItemController {
     @PostMapping("/query")
     public ResponseEntity<List<Item>> queryItems(@RequestBody ItemQueryConditions conditions) {
         List<Item> items = itemService.queryItems(conditions);
+        itemMessageProvider.sendItems(items);
         return ResponseEntity.ok(items);
     }
 

@@ -1,6 +1,7 @@
 package com.haydenshui.pricecomparison.shared.model;
 
 import com.haydenshui.pricecomparison.shared.util.validation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotBlank;
@@ -57,8 +58,17 @@ public class Item {
     @NotNull(message = "Price cannot be null")
     @NotBlank(message = "Price cannot be empty")
     private double price;
+    
+    // Optimistic locking version
+    @Version
+    private int version;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @JsonIgnore
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @JsonIgnore
     private LocalDateTime updatedAt;
 
     /**

@@ -29,7 +29,6 @@ public class ItemService {
      * @param item The item to create.
      * @return The created item.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     public Item createItem(Item item) {
         return itemRepository.save(item);
@@ -42,7 +41,6 @@ public class ItemService {
      * @return The found item.
      * @throws ItemNotFoundException if the item is not found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public Item getItemById(int id) {
         return Optional.ofNullable(itemRepository.findById(id))
@@ -56,7 +54,6 @@ public class ItemService {
      * @return The found item.
      * @throws ItemNotFoundException if the item is not found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public Item getItemBySkuId(String skuId) {
         return Optional.ofNullable(itemRepository.findBySkuId(skuId))
@@ -70,7 +67,6 @@ public class ItemService {
      * @return A list of items found matching the conditions.
      * @throws ItemNotFoundException if no items are found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public List<Item> queryItems(ItemQueryConditions conditions) {
         return Optional.ofNullable(itemRepository.findByConditionedQuery(
@@ -94,7 +90,6 @@ public class ItemService {
      * @return The updated item.
      * @throws ItemNotFoundException if the item is not found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     public Item updateItemByName(String name, Item item) {
         Item foundItem = Optional.ofNullable(itemRepository.findByName(name))
@@ -112,7 +107,6 @@ public class ItemService {
      * @return The updated item.
      * @throws ItemNotFoundException if the item is not found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     public Item updateItemBySkuId(String skuId, Item item) {
         Item foundItem = Optional.ofNullable(itemRepository.findBySkuId(skuId))
@@ -128,7 +122,6 @@ public class ItemService {
      * @param name The name of the item to delete.
      * @throws ItemNotFoundException if the item is not found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     public void deleteItem(String name) {
         Item item = itemRepository.findByName(name);
@@ -141,7 +134,6 @@ public class ItemService {
      * @param name The name of the item to check.
      * @return true if the item exists, false otherwise.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public boolean itemExistsByName(String name) {
         return itemRepository.existsByName(name);
@@ -153,7 +145,6 @@ public class ItemService {
      * @param skuId The SKU ID of the item to check.
      * @return true if the item exists, false otherwise.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public boolean itemExistsBySkuId(String skuId) {
         return itemRepository.existsBySkuId(skuId);
@@ -166,7 +157,6 @@ public class ItemService {
      * @return A list of price history found.
      * @throws PriceHistoryNotFoundException if no price history is found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public List<PriceHistory> getPriceHistoryById(int itemId) {
         return Optional.ofNullable(priceHistoryRepository.findByItemId(itemId))
@@ -180,7 +170,6 @@ public class ItemService {
      * @return A list of price history found.
      * @throws PriceHistoryNotFoundException if no price history is found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public List<PriceHistory> getPriceHistoryById(Item item) {
         return Optional.ofNullable(priceHistoryRepository.findByItemId(item.getId()))
@@ -194,7 +183,6 @@ public class ItemService {
      * @return A list of price history found matching the conditions.
      * @throws PriceHistoryNotFoundException if no price history is found.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional(readOnly = true)
     public List<PriceHistory> queryPriceHistory(PriceHistoryQueryConditions condition) {
         return Optional.ofNullable(priceHistoryRepository.findByConditionedQuery(
@@ -209,15 +197,18 @@ public class ItemService {
     }
 
     /**
-     * Save a list of items in batch.
+     * Save a list of items in batch. 
+     * Considering its usage in listening message queue, duplicated items will be ignored.
      * 
      * @param items The list of items to save.
      * @return The list of saved items.
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     public List<Item> saveItems(List<Item> items) {
-        return itemRepository.saveAll(items);
+        for(Item item : items) {
+            if(!itemExistsByName(item.getName()) && !itemExistsBySkuId(item.getSkuId()))
+                itemRepository.save(item);
+        }
     }
     
     /**
