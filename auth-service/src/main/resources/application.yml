@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: auth-service
+  config:
+    import: "configserver:http://localhost:8888"
+
+  cloud:
+    config:
+      uri: http://localhost:8888      # Config Server 地址
+      name: auth-service             # Config Server 上的配置文件名称
+      profile: default
+    
