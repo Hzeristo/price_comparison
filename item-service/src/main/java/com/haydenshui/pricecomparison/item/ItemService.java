@@ -39,12 +39,12 @@ public class ItemService {
      * 
      * @param id The id of the item to retrieve.
      * @return The found item.
-     * @throws ItemNotFoundException if the item is not found.
+     * @throws ResourceNotFoundException if the item is not found.
      */
     @Transactional(readOnly = true)
     public Item getItemById(int id) {
         return Optional.ofNullable(itemRepository.findById(id))
-                .orElseThrow(() -> new ItemNotFoundException("Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found", "item"));
     }
 
     /**
@@ -52,12 +52,12 @@ public class ItemService {
      * 
      * @param skuId The SKU ID of the item to retrieve.
      * @return The found item.
-     * @throws ItemNotFoundException if the item is not found.
+     * @throws ResourceNotFoundException if the item is not found.
      */
     @Transactional(readOnly = true)
     public Item getItemBySkuId(String skuId) {
         return Optional.ofNullable(itemRepository.findBySkuId(skuId))
-                .orElseThrow(() -> new ItemNotFoundException("Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found", "item"));
     }
 
     /**
@@ -65,7 +65,7 @@ public class ItemService {
      * 
      * @param conditions The user-defined query conditions.
      * @return A list of items found matching the conditions.
-     * @throws ItemNotFoundException if no items are found.
+     * @throws ResourceNotFoundException if no items are found.
      */
     @Transactional(readOnly = true)
     public List<Item> queryItems(ItemQueryConditions conditions) {
@@ -79,7 +79,7 @@ public class ItemService {
                     conditions.getSortBy(),
                     conditions.isAscending()
                 ))
-                .orElseThrow(() -> new ItemNotFoundException("Items not found under such query"));
+                .orElseThrow(() -> new ResourceNotFoundException("Items not found under such query", "item"));
     }
 
     /**
@@ -88,12 +88,12 @@ public class ItemService {
      * @param name The name of the item to update.
      * @param item The new item details.
      * @return The updated item.
-     * @throws ItemNotFoundException if the item is not found.
+     * @throws ResourceNotFoundException if the item is not found.
      */
     @Transactional
     public Item updateItemByName(String name, Item item) {
         Item foundItem = Optional.ofNullable(itemRepository.findByName(name))
-            .orElseThrow(() -> new ItemNotFoundException("Item not found with name: " + name));
+            .orElseThrow(() -> new ResourceNotFoundException("Item not found with name: " + name, "item"));
         updatePriceHistoryIfChanged(foundItem, item);
         updateItemFields(foundItem, item);
         return itemRepository.save(foundItem);
@@ -105,12 +105,12 @@ public class ItemService {
      * @param skuId The SKU ID of the item to update.
      * @param item The new item details.
      * @return The updated item.
-     * @throws ItemNotFoundException if the item is not found.
+     * @throws ResourceNotFoundException if the item is not found.
      */
     @Transactional
     public Item updateItemBySkuId(String skuId, Item item) {
         Item foundItem = Optional.ofNullable(itemRepository.findBySkuId(skuId))
-            .orElseThrow(() -> new ItemNotFoundException("Item not found with SKU ID: " + skuId));
+            .orElseThrow(() -> new ResourceNotFoundException("Item not found with SKU ID: " + skuId, "item"));
         updatePriceHistoryIfChanged(foundItem, item);
         updateItemFields(foundItem, item);
         return itemRepository.save(foundItem);
@@ -120,7 +120,7 @@ public class ItemService {
      * Delete item by name.
      * 
      * @param name The name of the item to delete.
-     * @throws ItemNotFoundException if the item is not found.
+     * @throws ResourceNotFoundException if the item is not found.
      */
     @Transactional
     public void deleteItem(String name) {
@@ -155,12 +155,12 @@ public class ItemService {
      * 
      * @param itemId The id of the item.
      * @return A list of price history found.
-     * @throws PriceHistoryNotFoundException if no price history is found.
+     * @throws ResourceNotFoundException if no price history is found.
      */
     @Transactional(readOnly = true)
     public List<PriceHistory> getPriceHistoryById(int itemId) {
         return Optional.ofNullable(priceHistoryRepository.findByItemId(itemId))
-                .orElseThrow(() -> new PriceHistoryNotFoundException("Price History not found for: " + itemId));
+                .orElseThrow(() -> new ResourceNotFoundException("Price History not found for: " + itemId, "price_history"));
     }
     
     /**
@@ -168,12 +168,12 @@ public class ItemService {
      * 
      * @param item The item to retrieve price history for.
      * @return A list of price history found.
-     * @throws PriceHistoryNotFoundException if no price history is found.
+     * @throws ResourceNotFoundException if no price history is found.
      */
     @Transactional(readOnly = true)
     public List<PriceHistory> getPriceHistoryById(Item item) {
         return Optional.ofNullable(priceHistoryRepository.findByItemId(item.getId()))
-                .orElseThrow(() -> new PriceHistoryNotFoundException("Price History not found for: " + item.getName()));
+                .orElseThrow(() -> new ResourceNotFoundException("Price History not found for: " + item.getName(), "price_history"));
     }
     
     /**
@@ -181,7 +181,7 @@ public class ItemService {
      * 
      * @param condition The conditions to query price history.
      * @return A list of price history found matching the conditions.
-     * @throws PriceHistoryNotFoundException if no price history is found.
+     * @throws ResourceNotFoundException if no price history is found.
      */
     @Transactional(readOnly = true)
     public List<PriceHistory> queryPriceHistory(PriceHistoryQueryConditions condition) {
@@ -193,7 +193,7 @@ public class ItemService {
                     condition.getStartDate(),
                     condition.getEndDate()
                 ))
-                .orElseThrow(() -> new PriceHistoryNotFoundException("Price History not found under such query"));
+                .orElseThrow(() -> new ResourceNotFoundException("Price History not found under such query", "price_history"));
     }
 
     /**

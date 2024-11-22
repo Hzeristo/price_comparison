@@ -65,18 +65,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles custom ItemNotFoundException.
-     *
-     * @param ex the exception thrown
-     * @return a standardized API response
-     */
-    @ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleItemNotFoundException(ItemNotFoundException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
-
-    /**
      * Handles custom NotImplementedException.
      *
      * @param ex the exception thrown
@@ -88,18 +76,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(response);
     }
 
-    /**
-     * Handles custom PriceHistoryNotFound.
-     *
-     * @param ex the exception thrown
-     * @return a standardized API response
-     */
-    @ExceptionHandler(PriceHistoryNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handlePriceHistoryNotFound(PriceHistoryNotFoundException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
-   
     /**
      * Handles custom UnauthorizedException.
      *
@@ -122,18 +98,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleUnnecessaryUpdateException(UnnecessaryUpdateException ex) {
         ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    }
-
-    /**
-     * Handles custom UserNotFoundException.
-     *
-     * @param ex the exception thrown
-     * @return a standardized API response
-     */
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleUserNotFoundException(UserNotFoundException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     /**

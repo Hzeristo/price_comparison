@@ -1,8 +1,5 @@
 package com.haydenshui.pricecomparison.shared.exception.custom;
 
-
-
-import com.haydenshui.pricecomparison.shared.model.Platform;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +10,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PriceHistoryNotFoundException  extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException {
     private String message;
+    private String type;
 
-    public PriceHistoryNotFoundException(String message) {
+    public ResourceNotFoundException(String message, String type) {
         super(message);
         this.message = message;
+        this.type = type;
     }
 }

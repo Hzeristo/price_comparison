@@ -33,27 +33,31 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(63)")
     @ValidUsername
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     @ValidPassword
     private String password;
 
-    @Column(unique = true, nullable = false)
-    @ValidPhone
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(255)")
+    @ValidEmail
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(15)")
     @ValidPhone
     private String phone;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, columnDefinition = "varchar(15) default 'USER'")
     private Role role = Role.USER; // Default role
-
+    
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     /**

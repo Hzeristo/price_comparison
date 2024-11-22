@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Setter
 @NoArgsConstructor
 public class DuplicateResourceException extends RuntimeException {
-    
     private String message;
     private String type;
 
