@@ -5,20 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
-/**
- * Favorite class represents a user's favorite items.
- */
 @Entity
 @Table(name = "favorites")
 @Data
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Favorite {
@@ -27,19 +21,39 @@ public class Favorite {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user_id;
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Item item_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
+    @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AlertFrequency> bounds;
+
+    @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AlertFrequency> frequencies;
+
+    @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AlertMethod> methods;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist() {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
         this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
+        this.updatedAt = now;
     }
 }
