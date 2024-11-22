@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.FORBIDDEN)
 @Getter
 @Setter
 @NoArgsConstructor
-public class CategoryNotFoundException extends RuntimeException {
+public class LoginFailureException extends RuntimeException {
     private String message;
-    
-    public CategoryNotFoundException(String message) {
+
+    public LoginFailureException(String message) {
         super(message);
         this.message = message;
     }

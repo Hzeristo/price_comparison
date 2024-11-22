@@ -16,17 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Handles custom CategoryNotFoundException.
-     *
-     * @param ex the exception thrown
-     * @return a standardized API response
-     */
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleCategoryNotFoundException(CategoryNotFoundException ex) {
-        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
 
     /**
      * Handles ConstraintViolationException.
