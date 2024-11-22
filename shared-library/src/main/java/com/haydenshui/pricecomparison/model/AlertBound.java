@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlertBounds {
+public class AlertBound {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +28,10 @@ public class AlertBounds {
     @Enumerated(EnumType.STRING)
     private AlertType conditionType;
 
-    @Column(name = "condition_value", nullable = false)
+    @Column(name = "condition_value")
     private double conditionValue;
 
-    @Column(name = "condition_percent", nullable = false)
+    @Column(name = "condition_percent")
     private int conditionPercent;
 
     @Column(name = "created_at", nullable = false, updatable = false)

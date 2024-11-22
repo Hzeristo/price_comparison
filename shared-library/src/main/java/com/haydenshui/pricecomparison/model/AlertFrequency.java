@@ -20,8 +20,9 @@ public class AlertFrequency {
         DAILY,       
         WEEKLY,      
         MONTHLY,    
-        HOURLY,      
-        CUSTOM
+        HOURLY,  
+        CONDITIONED,    
+        NONE;
     }
 
     @Id

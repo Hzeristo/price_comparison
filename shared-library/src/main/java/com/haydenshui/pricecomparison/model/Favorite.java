@@ -30,7 +30,7 @@ public class Favorite {
     private Item item;
 
     @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AlertFrequency> bounds;
+    private List<AlertBound> bounds;
 
     @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AlertFrequency> frequencies;
