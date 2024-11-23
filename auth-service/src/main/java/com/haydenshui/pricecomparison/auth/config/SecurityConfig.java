@@ -1,4 +1,4 @@
-package com.haydenshui.pricecomparison.user;
+package com.haydenshui.pricecomparison.auth.config;
 
 import com.haydenshui.pricecomparison.shared.jwt.JwtAuthenticationFilter;
 import com.haydenshui.pricecomparison.shared.jwt.JwtTokenProvider;
