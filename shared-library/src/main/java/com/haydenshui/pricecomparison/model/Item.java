@@ -17,7 +17,12 @@ import java.time.temporal.ChronoUnit;
  * Item class represents a product in the system.
  */
 @Entity
-@Table(name = "items")
+@Table(
+    name = "items",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "sku_id")
+    }
+)
 @Data
 @Builder
 @NoArgsConstructor
@@ -34,29 +39,29 @@ public class Item {
     private String skuid;
 
     @Column(nullable = false, columnDefinition = "varchar(255) default ''")
-    @ValidName
     private String name;
 
+    //更改
     @Column(name = "category_id", nullable = false, columnDefinition = "int default 0")
     @NotNull(message = "Category ID cannot be null")
     private int categoryId;
+    //
 
     @Column(nullable = false, length = 15, columnDefinition = "varchar(15) default ''")
     @NotNull(message = "Platform cannot be null")
     @NotBlank(message = "Platform cannot be empty")
     private String platform;
 
-    @Column(nullable = false, columnDefinition = "varchar(255) default ''")
+    @Column(nullable = false, columnDefinition = "varchar(2000) default ''")
     @ValidUrl
     private String image;
 
-    @Column(nullable = false, columnDefinition = "varchar(255) default ''")
+    @Column(nullable = false, columnDefinition = "varchar(2000) default ''")
     @ValidUrl
     private String url;
 
     @Column(nullable = false, columnDefinition = "decimal(10,2) default 0.00")
     @NotNull(message = "Price cannot be null")
-    @NotBlank(message = "Price cannot be empty")
     private double price;
     
     // Optimistic locking version

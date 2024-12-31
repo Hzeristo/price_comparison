@@ -2,9 +2,14 @@ package com.haydenshui.pricecomparison.user;
 
 import com.haydenshui.pricecomparison.shared.jwt.JwtAuthenticationFilter;
 import com.haydenshui.pricecomparison.shared.jwt.JwtTokenProvider;
+
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,9 +40,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors().and()
+        http.cors().configurationSource(corsConfigurationSource())
+            .and().csrf().disable()
             .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/user/validate").permitAll() // 公开的接口
+                    .requestMatchers("/user/new").permitAll() // 公开的接口
                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // 需要用户角色
                     .anyRequest().authenticated() // 其他请求需要认证
             )
@@ -52,13 +60,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin(allowedOrigin); // 允许所有域名
-        configuration.addAllowedMethod("GET");  // 明确指定允许的 HTTP 方法
-        configuration.addAllowedMethod("POST");
-        configuration.addAllowedMethod("OPTIONS");
-        configuration.addAllowedHeader("Authorization"); // 允许所有请求头
-        configuration.addAllowedHeader("Content-Type");
-        configuration.setAllowCredentials(true); // 允许传递凭证
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

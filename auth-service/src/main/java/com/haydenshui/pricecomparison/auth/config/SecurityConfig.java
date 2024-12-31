@@ -34,7 +34,6 @@ public class SecurityConfig {
             )
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 禁用session，使用无状态身份验证
-
         return http.build();
     }
 }

@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class PhoneValidator implements ConstraintValidator<ValidPhone, String> {
 
-    private static final String PHONE_PATTERN = "^\\d{13}$"; // 13位数字的正则表达式
+    private static final String PHONE_PATTERN = "^\\d{11}$"; // 13位数字的正则表达式
 
     @Override
     public void initialize(ValidPhone constraintAnnotation) {}
@@ -19,7 +19,7 @@ public class PhoneValidator implements ConstraintValidator<ValidPhone, String> {
         boolean valid = phone.matches(PHONE_PATTERN);
         if (!valid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Phone number must be exactly 13 digits.").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Phone number must be exactly 11 digits.").addConstraintViolation();
         }
         return valid;
     }

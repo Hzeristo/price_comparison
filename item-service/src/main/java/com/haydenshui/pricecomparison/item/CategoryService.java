@@ -7,80 +7,30 @@ import com.haydenshui.pricecomparison.shared.model.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
 @Service
 public class CategoryService {
     
-    private String pathname;
-    
     @Autowired
-    private final CategoryRepository categoryRepository;
-    
-    private final CategoryDict categoryDict;
-    
-    public CategoryService(CategoryRepository categoryRepository, String pathname) {
-        this.categoryRepository = categoryRepository;
-        this.categoryDict = loadCategoryDict(pathname);
-    }
-
-    /**
-     * load dictionary from local dictionary file
-     * @param filePath
-     * @return CategoryDict from file
-     */
-    private CategoryDict loadCategoryDict(String filePath) {
-        CategoryDict dict = new CategoryDict();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(filePath)))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    dict.addMapping(parts[0].trim(), parts[1].trim());
-                }
-            }
-        } catch (IOException e) {
-            throw new DictionaryNotInitializedException("Failed to initialize dictionary for platform: " + categoryDict.getPlatform().getName(), categoryDict.getPlatform());
-        }
-        return dict;
-    }
-
-    /**
-     * Get the category dictionary
-     * @return CategoryDict
-     */
-    public CategoryDict getCategoryDict() {
-        return categoryDict;
-    }
-    
-    /**
-     * Create a new category
-     * deprecated for static use of category dictionary
-     * @param category
-     * @return Category
-     * @throws CategoryAlreadyExistsException if category already exists
-     */
-    @Deprecated
-    public Category createCategory(Category category) {
-        if (categoryRepository.existsByName(category.getName())) {
-            throw new DuplicateResourceException("Category with name " + category.getName() + " already exists", "category");
-        }
-        return categoryRepository.save(category);
-    }
+    private CategoryRepository categoryRepository;
 
     /**
      * Get a category by its id
      * @param id
      * @return Category
-     * @throws CategoryNotFoundException if category does not exist
+     * @throws ResourceNotFoundException if category does not exist
      */
     public Category getCategoryById(int id) {
         return Optional.ofNullable(categoryRepository.findById(id))
-            .orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found", "category"));
     }
 
     /**
@@ -90,7 +40,7 @@ public class CategoryService {
      */
     public Category getCategoryByName(String name) {
         return Optional.ofNullable(categoryRepository.findByName(name))
-            .orElseThrow(() -> new CategoryNotFoundException("Category with name " + name + " not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Category with name " + name + " not found", "category"));
     }
 
     /**
@@ -100,7 +50,7 @@ public class CategoryService {
      */
     public Category getCategoryParent(String name) {
         return Optional.ofNullable(getCategoryByName(name).getParent())
-            .orElseThrow(() -> new CategoryNotFoundException("Parent of category with name " + name + " not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Parent of category with name " + name + " not found", "category"));
     }
     
     /**

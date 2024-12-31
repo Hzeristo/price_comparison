@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.haydenshui.pricecomparison.shared.exception.custom.JwtExpiredException;
 
 import java.security.Key;
 import java.util.Date;
@@ -62,11 +63,14 @@ public class JwtTokenProvider {
     }
 
     private Claims parseClaims(String token) {
-        // 使用 parseSignedClaims 代替 parseClaimsJws
-        return Jwts.parser()
+        try{
+            return Jwts.parser()
                 .setSigningKey(getSigningKey())  // 设置签名密钥
                 .build()
                 .parseSignedClaims(token)  // 使用新的方法 parseSignedClaims
                 .getBody();  // 返回 Claims 对象
+        } catch(io.jsonwebtoken.ExpiredJwtException e) {
+            throw new JwtExpiredException("JWT token has expired");
+        }
     }
 }

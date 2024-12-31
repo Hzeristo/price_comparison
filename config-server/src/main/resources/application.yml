@@ -8,8 +8,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/Hzeristo/price_comparison  # 配置文件存放的 Git 仓库
-          searchPaths: config-server/src/main/resources/config                 # Git 仓库中的路径
+          uri: file:///D:/Code/compare_spring/price_comparison_app/config-server/src/main/resources/config  
 
   eureka:
     client:

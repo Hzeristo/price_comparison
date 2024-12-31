@@ -1,17 +1,24 @@
 package com.haydenshui.pricecomparison.user;
 
+import com.haydenshui.pricecomparison.shared.model.Platform;
 import com.haydenshui.pricecomparison.shared.model.User;
 import com.haydenshui.pricecomparison.shared.util.ApiResponse;
-import com.haydenshui.pricecomparison.shared.util.validation.*;
+import com.haydenshui.pricecomparison.shared.exception.custom.*;
+import com.haydenshui.pricecomparison.shared.jwt.*;
 import jakarta.validation.Valid;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * Controller class for managing user-related API endpoints.
@@ -19,6 +26,12 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    @Value("${jwt.expiration}")
+    private long expiration;
 
     private final UserService userService;
 
@@ -61,8 +74,9 @@ public class UserController {
      */
     @GetMapping("/username")
     public ResponseEntity<ApiResponse<User>> getUserByUsername(
-            @RequestParam @NotNull @ValidUsername String username) {
+            @RequestParam @NotNull String username) {
         User user = userService.getUserByUsername(username);
+        user.setPassword(user.getPassword());
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 
@@ -75,7 +89,7 @@ public class UserController {
      */
     @GetMapping("/email")
     public ResponseEntity<ApiResponse<Boolean>> userExistsByEmail(
-            @RequestParam @NotNull @ValidEmail String email) {
+            @RequestParam @NotNull String email) {
         boolean exists = userService.userExistsByEmail(email);
         return ResponseEntity.ok(ApiResponse.success(exists));
     }
@@ -89,7 +103,7 @@ public class UserController {
      */
     @GetMapping("/phone")
     public ResponseEntity<ApiResponse<Boolean>> userExistsByPhone(
-            @RequestParam @NotNull @ValidPhone String phone) {
+            @RequestParam @NotNull String phone) {
         boolean exists = userService.userExistsByPhone(phone);
         return ResponseEntity.ok(ApiResponse.success(exists));
     }
@@ -106,18 +120,22 @@ public class UserController {
      */
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<User>> updateUserFields(
-            @RequestParam @ValidUsername String username,
+            @RequestParam String username,
             @RequestBody Map<String, Object> updates) {
         User updatedUser = userService.updateUser(username, updates);
         return ResponseEntity.ok(ApiResponse.success(updatedUser));
     }
 
-    @GetMapping("validate")
-    public ResponseEntity<ApiResponse<User>> validateUser(
-            @RequestParam @NotNull @ValidUsername String username,
-            @RequestParam @NotNull @ValidPassword String password) {
+    @GetMapping("/validate")
+    public ResponseEntity<ApiResponse<String>> validateUser(
+            @RequestParam String username,
+            @RequestParam String password) {
         if (userService.validatePassword(username, password)) {
-            return ResponseEntity.ok(ApiResponse.success(userService.getUserByUsername(username)));
+            ArrayList<String> roles = new ArrayList<>();
+            roles.add("USER");
+            JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(secretKey, expiration);
+            String token = jwtTokenProvider.generateToken(username, roles);
+            return ResponseEntity.ok(ApiResponse.success(token));
         } else {
             return ResponseEntity.ok(ApiResponse.failure("Invalid password"));
         }
@@ -133,7 +151,7 @@ public class UserController {
      */
     @PutMapping("/manage-admin")
     public ResponseEntity<ApiResponse<User>> manageAdmin(
-            @RequestParam @NotNull @ValidUsername String username,
+            @RequestParam @NotNull String username,
             @RequestParam boolean isAdmin) {
         userService.manageAdmin(username, isAdmin);
         return ResponseEntity.ok(ApiResponse.success(null));
@@ -148,8 +166,120 @@ public class UserController {
      */
     @DeleteMapping("/delete")
     public ResponseEntity<ApiResponse<Void>> deleteUser(
-            @RequestParam @NotNull @ValidUsername String username) {
+            @RequestParam @NotNull String username) {
         userService.deleteUser(username);
         return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    
+    /**
+     * Handles ConstraintViolationException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        System.out.println("Handling ConstraintViolationException: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure("Invalid input for database: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    /**
+     * Handles custom DictionaryNotInitializedException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(DictionaryNotInitializedException.class)
+    public ResponseEntity<ApiResponse<Platform>> handleDictionaryNotInitializedException(DictionaryNotInitializedException ex) {
+        System.out.println("Handling DictionaryNotInitializedException: " + ex.getMessage());
+        ApiResponse<Platform> response = ApiResponse.failure(ex.getMessage(), ex.getPlatform());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    /**
+     * Handles custom DuplicateResourceException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<String>> handleDuplicateResourceException(DuplicateResourceException ex) {
+        System.out.println("Handling DuplicateResourceException: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage(), ex.getType());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    /**
+     * Handles custom NotImplementedException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(NotImplementedException.class)
+    public ResponseEntity<ApiResponse<String>> handleNotImplementedException(NotImplementedException ex) {
+        System.out.println("Handling NotImplementedException: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(response);
+    }
+
+    /**
+     * Handles custom UnauthorizedException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {
+        System.out.println("Handling UnauthorizedException: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    /**
+     * Handles custom UnnecessaryUpdateException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(UnnecessaryUpdateException.class)
+    public ResponseEntity<ApiResponse<String>> handleUnnecessaryUpdateException(UnnecessaryUpdateException ex) {
+        System.out.println("Handling UnnecessaryUpdateException: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(JwtExpiredException.class)
+    public ResponseEntity<ApiResponse<String>> handleExpiredJwtException(JwtExpiredException ex) {
+        System.out.println("Handling JwtExpired: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    /**
+     * Handles IllegalArgumentException.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        System.out.println("Handling IllegalArgumentException: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure("Invalid input for matching: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    /**
+     * Handles generic exceptions.
+     *
+     * @param ex the exception thrown
+     * @return a standardized API response
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<String>> handleGenericException(Exception ex) {
+        System.out.println("Handling generic exception: " + ex.getMessage());
+        ApiResponse<String> response = ApiResponse.failure("An error occurred: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

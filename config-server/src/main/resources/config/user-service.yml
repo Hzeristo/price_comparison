@@ -2,7 +2,7 @@ server:
   port: 8081
 
 jwt:
-  secret: your-secret-key
+  secret: haydenshuihaydenshuihaydenshuihaydenshui
   expiration: 86400000  # 1 day in milliseconds
 
 auth:

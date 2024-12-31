@@ -1,4 +1,4 @@
-package com.haydenshui.pricecomparison.item_service;
+package com.haydenshui.pricecomparison.item;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

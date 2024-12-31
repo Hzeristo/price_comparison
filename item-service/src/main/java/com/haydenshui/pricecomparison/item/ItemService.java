@@ -11,14 +11,14 @@ import java.util.List;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+/**
+ * Service class for managing items, including price history maintainence
+ */
 @Service
 public class ItemService {
     
     @Autowired
     private ItemRepository itemRepository;
-
-    @Autowired
-    private CategoryServiceFactory categoryServiceFactory;
 
     @Autowired
     private PriceHistoryRepository priceHistoryRepository;
@@ -31,6 +31,7 @@ public class ItemService {
      */
     @Transactional
     public Item createItem(Item item) {
+        System.out.println("Creating item: " + item.getName());
         return itemRepository.save(item);
     }
 
@@ -56,7 +57,7 @@ public class ItemService {
      */
     @Transactional(readOnly = true)
     public Item getItemBySkuId(String skuId) {
-        return Optional.ofNullable(itemRepository.findBySkuId(skuId))
+        return Optional.ofNullable(itemRepository.findBySkuid(skuId))
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found", "item"));
     }
 
@@ -67,7 +68,7 @@ public class ItemService {
      * @return A list of items found matching the conditions.
      * @throws ResourceNotFoundException if no items are found.
      */
-    @Transactional(readOnly = true)
+    /* @Transactional(readOnly = true)
     public List<Item> queryItems(ItemQueryConditions conditions) {
         return Optional.ofNullable(itemRepository.findByConditionedQuery(
                     conditions.getName(),
@@ -80,7 +81,7 @@ public class ItemService {
                     conditions.isAscending()
                 ))
                 .orElseThrow(() -> new ResourceNotFoundException("Items not found under such query", "item"));
-    }
+    } */
 
     /**
      * Update item by name.
@@ -109,7 +110,7 @@ public class ItemService {
      */
     @Transactional
     public Item updateItemBySkuId(String skuId, Item item) {
-        Item foundItem = Optional.ofNullable(itemRepository.findBySkuId(skuId))
+        Item foundItem = Optional.ofNullable(itemRepository.findBySkuid(skuId))
             .orElseThrow(() -> new ResourceNotFoundException("Item not found with SKU ID: " + skuId, "item"));
         updatePriceHistoryIfChanged(foundItem, item);
         updateItemFields(foundItem, item);
@@ -147,7 +148,7 @@ public class ItemService {
      */
     @Transactional(readOnly = true)
     public boolean itemExistsBySkuId(String skuId) {
-        return itemRepository.existsBySkuId(skuId);
+        return itemRepository.existsBySkuid(skuId);
     }
 
     /**

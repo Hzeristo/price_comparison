@@ -2,13 +2,9 @@ server:
   port: 8082
 
 jwt:
-  secret: your-secret-key
+  secret: haydenshuihaydenshuihaydenshuihaydenshui
   expiration: 86400000  # 1 day in milliseconds
   
-auth:
-  allowed-origin: http://localhost:3000
-
-
 spring:
   application:
     name: item-service
@@ -38,6 +34,7 @@ eureka:
     registerWithEureka: true  # 是否注册到 Eureka
     fetchRegistry: true  # 是否从 Eureka 获取服务注册信息
     instance:
+      prefer-ip-address: false
       hostname: item-service-host  # 服务实例的主机名
   server:
     enable-self-preservation: false  # 禁用自我保护机制

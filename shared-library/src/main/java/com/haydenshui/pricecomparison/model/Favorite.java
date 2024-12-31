@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Entity
 @Table(name = "favorites")
@@ -21,22 +20,16 @@ public class Favorite {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
-    @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AlertBound> bounds;
-
-    @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AlertFrequency> frequencies;
-
-    @OneToMany(mappedBy = "favorite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AlertMethod> methods;
+    @Column(name = "reminder_frequency", nullable = false)
+    private int reminderFrequency; // 以秒为单位的提醒频率
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -44,11 +37,15 @@ public class Favorite {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "last_reminder_time")
+    private LocalDateTime lastReminderTime; // 上次提醒时间
+
     @PrePersist
     public void prePersist() {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
         this.createdAt = now;
         this.updatedAt = now;
+        this.lastReminderTime = now; // 设置首次提醒时间为创建时间
     }
 
     @PreUpdate

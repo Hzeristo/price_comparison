@@ -10,11 +10,15 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 
 @Configuration
 @EnableAsync
 @EnableScheduling
 public class AppConfig {
-
-
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

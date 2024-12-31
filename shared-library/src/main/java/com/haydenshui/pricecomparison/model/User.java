@@ -38,7 +38,6 @@ public class User {
     private String username;
 
     @Column(nullable = false, columnDefinition = "varchar(255)")
-    @ValidPassword
     private String password;
 
     @Column(unique = true, nullable = false, columnDefinition = "varchar(255)")

@@ -2,7 +2,7 @@ package com.haydenshui.pricecomparison.user;
 
 import com.haydenshui.pricecomparison.shared.model.*;
 import com.haydenshui.pricecomparison.shared.exception.custom.*;
-
+import com.haydenshui.pricecomparison.shared.exception.GlobalExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,9 +37,9 @@ public class UserService {
      */
     
     @Transactional
-    @RedisLock(key = "'user:create:' + #user.username", timeout = 5000)
     public User createUser(User user) {
         validateUserForDuplicates(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -51,6 +51,7 @@ public class UserService {
      * @throws ResourceNotFoundException if no user is found with the given username.
      */
     public User getUserByUsername(String username) {
+        System.out.println("Getting user by username: " + username);
         return Optional.ofNullable(userRepository.findByUsername(username))
                 .orElseThrow(() -> new ResourceNotFoundException("Can't find user named \"" + username + "\"", "user"));
     }
@@ -65,8 +66,8 @@ public class UserService {
      * @throws DuplicateResourceException if the updated information conflicts with existing users.
      */
     @Transactional
-    @RedisLock(key = "'user:update:' + #username", timeout = 5000)
     public User updateUser(String username, Map<String, Object> updates) {
+        System.out.println("Updating user: " + username);
         User existingUser = getUserByUsername(username);
         validateUserForDuplicates(updates);
         Map<String, Consumer<Object>> fieldUpdaters = new HashMap<>();
@@ -91,7 +92,6 @@ public class UserService {
      * @throws ResourceNotFoundException if no user is found with the given username.
      */
     @Transactional
-    @RedisLock(key = "'user:delete:' + #username", timeout = 5000)
     public void deleteUser(String username) {
         User existingUser = getUserByUsername(username);
         userRepository.delete(existingUser);

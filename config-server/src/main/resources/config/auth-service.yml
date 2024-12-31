@@ -1,0 +1,29 @@
+server:
+  port: 8090
+
+jwt:
+  secret: haydenshuihaydenshuihaydenshuihaydenshui
+  expiration: 86400000  # 1 day in milliseconds
+
+user:
+  service:
+    url: http://localhost:8081 
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    enabled: false
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka  # Eureka 服务器地址
+    registerWithEureka: true  # 是否注册到 Eureka
+    fetchRegistry: true  # 是否从 Eureka 获取服务注册信息
+    instance:
+      hostname: auth-service-host  # 服务实例的主机名
+  server:
+    enable-self-preservation: false  # 禁用自我保护机制

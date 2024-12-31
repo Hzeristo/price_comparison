@@ -25,7 +25,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
      * @param skuId The platform ID of the item to find.
      * @return The item with the given platform ID, or null if no such item exists.
      */
-    Item findBySkuId(String skuId);
+    Item findBySkuid(String skuId);
     
     /**
      * Get an item by its name.
@@ -79,7 +79,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
      * @param ascending Whether to sort in ascending order.
      * @return A list of items that match the given query conditions.
      */
-    @Query("SELECT i FROM Item i WHERE " +
+    /* @Query("SELECT i FROM Item i WHERE " +
         "(:skuId IS NULL OR i.sku_id = :skuId)" + 
         "(:name IS NULL OR i.name LIKE %:name%) AND " +
         "(:categoryId IS NULL OR i.category_id = :categoryId) AND " +
@@ -98,7 +98,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
         @Param("platforms") List<String> platforms,
         @Param("sortBy") String sortBy,
         @Param("ascending") boolean ascending
-    );
+    ); */
 
     /**
      * Check if an item exists by its name.
@@ -113,5 +113,5 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
      * @param skuId The platform ID of the item to check.
      * @return True if an item with the given platform ID exists, false otherwise.
      */
-    boolean existsBySkuId(String skuId);
+    boolean existsBySkuid(String skuId);
 }
